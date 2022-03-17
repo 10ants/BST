@@ -1,4 +1,3 @@
-#pragma once
 #include <list>
 #include <iostream> // For debugging.  Only main should have cout for real
 template <typename T>
@@ -10,176 +9,169 @@ class Tree
         TreeNode* mLeft = nullptr;
         TreeNode* mRight = nullptr;
         TreeNode* mParent = nullptr;
-        bool mIsDead = false;
 
         TreeNode()
         {
         }
-
-        TreeNode(T tData) : TreeNode()
+        TreeNode( T tData ) : TreeNode()
         {
             mData = tData;
         }
     };
-
     TreeNode* mHead;
-    // This tree wants a copy of that node and all beneath it
-    void CopyTree(TreeNode* tNode)
+    
+// This tree wants a copy of that node and all beneath it
+    
+    void CopyTree( TreeNode* tNode )
     {
-        if (tNode != nullptr)
+        if( tNode != nullptr )
         {
-            Add(tNode->mData); // Add data from the sent Node
-            CopyTree(tNode->mLeft); // recurse to the left child node
-            CopyTree(tNode->mRight);// recurse to the right child node
+                Add(tNode->mData); // Add data from the sent Node
+                CopyTree(tNode->mLeft); // recurse to the left child node
+                CopyTree(tNode->mRight);// recurse to the right child node
         }
     }
-
-    // Pack this list with the data from that node down, small to large
-    void DumpTree(std::list<T>* tLeftToRight, TreeNode* tNode)
+// Pack this list with the data from that node down, small to large
+    
+    void DumpTree( std::list<T>* tLeftToRight, TreeNode* tNode )
     {
-        if (tNode != nullptr)
+        if( tNode != nullptr )
         {
             DumpTree(tLeftToRight, tNode->mLeft); // recurse left walker
             tLeftToRight->push_back(tNode->mData); // push back the data retrevied
             DumpTree(tLeftToRight, tNode->mRight); // recuse right walker
         }
     }
-
-    // Delete that node and everything under it.
-    void DeleteTree(TreeNode* tNode)
+// Delete that node and everything under it.
+    
+    void DeleteTree( TreeNode* tNode )
     {
-        if (tNode != nullptr)
+        if( tNode != nullptr )
         {
             DeleteTree(tNode->mLeft); // recurse left child
             DeleteTree(tNode->mRight); // recurse right child
             delete tNode; // Delete node
         }
     }
-
-    // Look at what Add/Contain/Remove all do as step one.  THey each have
-    // different unique things to do as step two, but first they all want
-    // the same node pointer to play with.
-    // This is a single path, so it is a loop.
-    TreeNode* PrivateFind(const T& tWhat)
+    
+// Look at what Add/Contain/Remove all do as step one.  THey each have
+// different unique things to do as step two, but first they all want
+// the same node pointer to play with.
+// This is a single path, so it is a loop.
+    
+    TreeNode* PrivateFind( const T& tWhat )
     {
-        if (mHead == nullptr)
-            return nullptr;
-
-        TreeNode* tWalker = mHead;
-        while (tWalker != nullptr) 
-        {
-            if (tWalker->mData == tWhat) 
-            {
-                return tWalker;
-            }
-            else if (tWalker->mData > tWhat) 
-            {
-                if (tWalker->mLeft == nullptr) 
-                {
-                    return tWalker;
-                }
-                else 
-                {
-                    tWalker = tWalker->mLeft;
-                }
-            }
-            else 
-            {
-                if (tWalker->mRight == nullptr) 
-                {
-                    return tWalker;
-                }
-                else 
-                {
-                    tWalker = tWalker->mRight;
-                }
-            }
-        }
+        
+    if (mHead == nullptr)
+    return nullptr;
+                     
+    TreeNode *tWalker = mHead;
+    while (true) {
+    if (tWalker->mData == tWhat)
         return tWalker;
-    }
-   
-
-
+    else if (tWalker->mData > tWhat)
+    {
+        if (tWalker->mLeft == nullptr)
+            return tWalker;
+        else
+        tWalker = tWalker->mLeft;
+        }
+    else
+    {
+    if (tWalker->mRight == nullptr)
+        return tWalker;
+    else
+        tWalker = tWalker->mRight;
+        }
+         }
+             }
+      
 public:
-
     Tree()
     {
         mHead = nullptr;
     }
-
-    Tree(const Tree& other) : Tree()
+    
+    Tree( const Tree& other ) : Tree()
     {
-        CopyTree(other.mHead);
+        CopyTree( other.mHead );
     }
-
-    Tree& operator= (const Tree& other)
+    
+    Tree& operator= ( const Tree& other )
     {
-        if (this == &other)
+        if( this == &other )
             return *this;
-        DeleteTree(mHead);
+        DeleteTree( mHead );
         mHead = nullptr;
-        CopyTree(other.mHead);
+        CopyTree( other.mHead );
 
         return *this;
     }
-
+    
     ~Tree()
     {
-        DeleteTree(mHead);
+        DeleteTree( mHead );
     }
-
-    void Add(T tWhat)
+    
+    void Add( T tWhat )
     {
         if (mHead == nullptr)
         {
             mHead = new TreeNode(tWhat);
             return;
         }
-
+      
         TreeNode* tWalker = PrivateFind(tWhat);
+        
         if (tWalker->mData == tWhat)
-        {
-            tWalker->mIsDead = false;  // Might already be false.Don't care.
-        }
-        else if (tWalker->mData > tWhat) 
+            return;
+        if (tWalker->mData > tWhat)
         {
             tWalker->mLeft = new TreeNode(tWhat);
         }
-        else 
+        else
         {
             tWalker->mRight = new TreeNode(tWhat);
         }
     }
     
-
-    void Remove(T tWhat)
+    void Remove( T tWhat ) // Where you delete all nodes.
     {
-        if (mHead == nullptr) 
-            return;
+    TreeNode *tWalker= PrivateFind(tWhat);
+    if (tWalker == nullptr)
+        return;
+    if (tWalker->mData == tWhat)
+    {
+    TreeNode *tWalkerDelete = tWalker;
+             if (tWalker == tWalker->mParent->mLeft)
+               tWalker->mParent->mLeft = nullptr;
+             else
+               tWalker->mParent->mRight = nullptr;
+             std::list<int> children;
+        
+             DumpTree(&children, tWalkerDelete->mLeft);
+             DumpTree(&children, tWalkerDelete->mRight);
+             for(std::list<int>::iterator i = children.begin(); i != children.end(); ++i)
+               Add(*i);
+             DeleteTree(tWalkerDelete);
+           }
+               
+    
+    bool Contains( T tWhat)
+    {
+        if (mHead == nullptr)
+            return false;
 
-        TreeNode* tWalker = PrivateFind(tWhat);
-        if (tWalker->mData == tWhat)
-        {
-            tWalker->mIsDead = true;
-        }
+                TreeNode* tWalker = PrivateFind(tWhat);
+                if (tWalker->mData == tWhat)
+                    return true;
+                else
+                    return false;
     }
     
-
-    bool Contains(T tWhat)
+    void Dump( std::list<T>* tLeftToRight )
     {
-        if (mHead == nullptr) 
-            return false;
-
-        TreeNode* tWalker = PrivateFind(tWhat);
-        if (tWalker->mData == tWhat)
-            return true;
-        else
-            return false;
+        DumpTree( tLeftToRight, mHead );
     }
-
-
-    void Dump(std::list<T>* tLeftToRight)
-    {
-        DumpTree(tLeftToRight, mHead);
-    }
+    
 };
