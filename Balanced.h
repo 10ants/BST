@@ -343,7 +343,7 @@ public:
 			tFound->mRight->mParent = tFound;
 		}
 
-		MasterRebalance();
+		MasterRebalance(); // Fix
 	}
 
 	bool Contains(T tWhat)
