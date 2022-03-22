@@ -69,7 +69,7 @@ class Tree
 	TreeNode* mHead;
 	bool mDebugOn = false; // Used to add couts to Dump.
 
-	void MasterRebalance()
+	void MasterRebalance() // Make this not recursive dumbie.
 	{
 		// This is the easy version where instead of tracking the exact path we need to check, we just hit everything
 		// This is bad because it turns our operations in to O(n) instead of O(log n)
